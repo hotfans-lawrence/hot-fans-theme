@@ -1,0 +1,574 @@
+{% doc %}
+  @prompt
+    Table
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-table-container-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+
+  .ai-table-{{ ai_gen_id }} {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: {{ block.settings.table_background }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+  }
+
+  .ai-table-{{ ai_gen_id }} thead {
+    background-color: {{ block.settings.header_background }};
+  }
+
+  .ai-table-{{ ai_gen_id }} th {
+    padding: {{ block.settings.cell_padding }}px;
+    text-align: {{ block.settings.header_alignment }};
+    color: {{ block.settings.header_text_color }};
+    font-weight: 600;
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    font-size: {{ block.settings.header_font_size }}px;
+  }
+
+  .ai-table-{{ ai_gen_id }} td {
+    padding: {{ block.settings.cell_padding }}px;
+    text-align: {{ block.settings.cell_alignment }};
+    color: {{ block.settings.cell_text_color }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    font-size: {{ block.settings.cell_font_size }}px;
+  }
+
+  .ai-table-{{ ai_gen_id }} tbody tr:nth-child(even) {
+    background-color: {{ block.settings.row_alternate_background }};
+  }
+
+  .ai-table-{{ ai_gen_id }} tbody tr:hover {
+    background-color: {{ block.settings.row_hover_background }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-table-container-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-table-{{ ai_gen_id }} th,
+    .ai-table-{{ ai_gen_id }} td {
+      padding: {{ block.settings.cell_padding | times: 0.7 }}px;
+      font-size: {{ block.settings.cell_font_size | times: 0.9 }}px;
+    }
+
+    .ai-table-{{ ai_gen_id }} th {
+      font-size: {{ block.settings.header_font_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-table-container-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <table class="ai-table-{{ ai_gen_id }}">
+    {% if block.settings.show_header %}
+      <thead>
+        <tr>
+          {% if block.settings.header_col_1 != blank %}
+            <th>{{ block.settings.header_col_1 }}</th>
+          {% endif %}
+          {% if block.settings.header_col_2 != blank %}
+            <th>{{ block.settings.header_col_2 }}</th>
+          {% endif %}
+          {% if block.settings.header_col_3 != blank %}
+            <th>{{ block.settings.header_col_3 }}</th>
+          {% endif %}
+          {% if block.settings.header_col_4 != blank %}
+            <th>{{ block.settings.header_col_4 }}</th>
+          {% endif %}
+        </tr>
+      </thead>
+    {% endif %}
+    <tbody>
+      {% for i in (1..10) %}
+        {% liquid
+          assign row_key = 'row_' | append: i
+          assign col1_key = row_key | append: '_col_1'
+          assign col2_key = row_key | append: '_col_2'
+          assign col3_key = row_key | append: '_col_3'
+          assign col4_key = row_key | append: '_col_4'
+          
+          assign col1_value = block.settings[col1_key]
+          assign col2_value = block.settings[col2_key]
+          assign col3_value = block.settings[col3_key]
+          assign col4_value = block.settings[col4_key]
+          
+          assign has_content = false
+          if col1_value != blank or col2_value != blank or col3_value != blank or col4_value != blank
+            assign has_content = true
+          endif
+        %}
+        
+        {% if has_content %}
+          <tr>
+            {% if block.settings.header_col_1 != blank %}
+              <td>{{ col1_value }}</td>
+            {% endif %}
+            {% if block.settings.header_col_2 != blank %}
+              <td>{{ col2_value }}</td>
+            {% endif %}
+            {% if block.settings.header_col_3 != blank %}
+              <td>{{ col3_value }}</td>
+            {% endif %}
+            {% if block.settings.header_col_4 != blank %}
+              <td>{{ col4_value }}</td>
+            {% endif %}
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% schema %}
+{
+  "name": "Table",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Table headers"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show header row",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "header_col_1",
+      "label": "Column 1 header",
+      "default": "Feature"
+    },
+    {
+      "type": "text",
+      "id": "header_col_2",
+      "label": "Column 2 header",
+      "default": "Description"
+    },
+    {
+      "type": "text",
+      "id": "header_col_3",
+      "label": "Column 3 header",
+      "default": "Price"
+    },
+    {
+      "type": "text",
+      "id": "header_col_4",
+      "label": "Column 4 header"
+    },
+    {
+      "type": "header",
+      "content": "Row 1"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_1",
+      "label": "Column 1",
+      "default": "Material"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_2",
+      "label": "Column 2",
+      "default": "Premium feathers"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_3",
+      "label": "Column 3",
+      "default": "$29.99"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 2"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_1",
+      "label": "Column 1",
+      "default": "Size"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_2",
+      "label": "Column 2",
+      "default": "Large"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_3",
+      "label": "Column 3",
+      "default": "$39.99"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 3"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_1",
+      "label": "Column 1",
+      "default": "Color options"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_2",
+      "label": "Column 2",
+      "default": "Multiple"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_3",
+      "label": "Column 3",
+      "default": "$49.99"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 4"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 5"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 6"
+    },
+    {
+      "type": "text",
+      "id": "row_6_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_6_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_6_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_6_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 7"
+    },
+    {
+      "type": "text",
+      "id": "row_7_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_7_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_7_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_7_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 8"
+    },
+    {
+      "type": "text",
+      "id": "row_8_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_8_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_8_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_8_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 9"
+    },
+    {
+      "type": "text",
+      "id": "row_9_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_9_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_9_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_9_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Row 10"
+    },
+    {
+      "type": "text",
+      "id": "row_10_col_1",
+      "label": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "row_10_col_2",
+      "label": "Column 2"
+    },
+    {
+      "type": "text",
+      "id": "row_10_col_3",
+      "label": "Column 3"
+    },
+    {
+      "type": "text",
+      "id": "row_10_col_4",
+      "label": "Column 4"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Header style"
+    },
+    {
+      "type": "color",
+      "id": "header_background",
+      "label": "Background",
+      "default": "#2e262b"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "header_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Cell style"
+    },
+    {
+      "type": "color",
+      "id": "table_background",
+      "label": "Background",
+      "default": "#16032e"
+    },
+    {
+      "type": "color",
+      "id": "cell_text_color",
+      "label": "Text color",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "select",
+      "id": "cell_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "cell_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "cell_padding",
+      "label": "Cell padding",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Row style"
+    },
+    {
+      "type": "color",
+      "id": "row_alternate_background",
+      "label": "Alternate row background",
+      "default": "#1a0433"
+    },
+    {
+      "type": "color",
+      "id": "row_hover_background",
+      "label": "Hover background",
+      "default": "#2e1a4a"
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#aaaaaa"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    }
+  ],
+  "presets": [
+    {
+      "name": "Table"
+    }
+  ]
+}
+{% endschema %}

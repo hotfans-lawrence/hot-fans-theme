@@ -1,0 +1,564 @@
+{% doc %}
+  @prompt
+    请在我的 Shopify 产品系列模板里，新增一个 42 Standard Color Options 色卡说明区块，用于介绍 Metal Aluminum Fan Staves & Hardware Kits 的颜色选择。
+    
+    区块位置放在：
+    
+    Hardware Kit Included 下方，Why Choose Aluminum Staves 上方。
+    
+    这个区块不要做得太复杂，也不要占用太多页面高度。整体风格要和页面一致：premium / elegant / clean / stage craft，适合移动端浏览。
+    
+    区块结构
+    
+    请使用：
+    
+    Rich Text + Image
+    
+    如果模板不支持这种组合，请使用：
+    
+    Rich Text 区块
+    Image 区块
+    分开上下排列。
+    Rich Text 内容
+    
+    Heading / 标题：
+    
+    42 Standard Color Options
+    
+    Text / 正文：
+    
+    Choose from 42 standard colors for your aluminum fan staves. Match your feather color, costume design, or stage performance theme. Custom color requests are also welcome.
+    
+    Small note / 小提示：
+    
+    Colors may vary slightly due to screen settings, lighting, and the powder-coated finish.
+    
+    Image / 图片
+    
+    请在文字下面放一张完整的 42 色色卡图。
+    
+    图片不要铺得太高，桌面端建议中等宽度显示，手机端自动适配全宽。
+    
+    Image Alt Text：
+    
+    42 standard color options for metal aluminum fan staves
+    
+    设计要求
+    标题使用 H2
+    背景使用白色或浅色
+    文字居中或左对齐都可以，但整体要干净高级
+    图片不要过大，不要压住页面
+    桌面端保持适中宽度
+    手机端图片清晰可读
+    Padding 使用中等，不要太大
+    不要添加产品列表
+    不要添加复杂按钮
+    不要使用视频
+    不要让这个区块比 Hero Banner 更抢眼
+    重点表达：42 colors available + custom colors welcome
+    如果可以添加按钮
+    
+    如果模板支持按钮，可以加一个小按钮：
+    
+    Button Text:
+    View Color Chart
+    
+    但如果没有单独色卡页面，可以不加按钮。
+    
+    最终目标
+    
+    这个区块的作用是让客户快速知道：
+    我们的 aluminum fan staves 有 42 standard colors，可以搭配羽毛、服装和舞台主题，也可以联系我们定制颜色。
+    
+    请生成一个简洁、高级、适合 Shopify Collection 页面使用的色卡说明区块。
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-color-chart-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_top }}px 20px {{ block.settings.padding_bottom }}px;
+  }
+
+  .ai-color-chart-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-color-chart-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.heading_spacing }}px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .ai-color-chart-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+    margin: 0 0 {{ block.settings.text_spacing }}px;
+  }
+
+  .ai-color-chart-note-{{ ai_gen_id }} {
+    font-size: {{ block.settings.note_size }}px;
+    color: {{ block.settings.note_color }};
+    line-height: 1.5;
+    margin: 0 0 {{ block.settings.note_spacing }}px;
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  .ai-color-chart-image-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: {{ block.settings.image_max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-color-chart-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-color-chart-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    position: relative;
+  }
+
+  .ai-color-chart-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 400px;
+    max-height: 300px;
+    opacity: 0.3;
+  }
+
+  .ai-color-chart-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .ai-color-chart-button-wrapper-{{ ai_gen_id }} {
+    margin-top: {{ block.settings.button_spacing }}px;
+  }
+
+  .ai-color-chart-button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.button_text_size }}px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+    text-transform: {{ block.settings.button_uppercase }};
+    letter-spacing: 0.05em;
+  }
+
+  .ai-color-chart-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg_color }};
+    color: {{ block.settings.button_hover_text_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-color-chart-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top | times: 0.7 }}px 16px {{ block.settings.padding_bottom | times: 0.7 }}px;
+    }
+
+    .ai-color-chart-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.85 }}px;
+    }
+
+    .ai-color-chart-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.95 }}px;
+    }
+
+    .ai-color-chart-note-{{ ai_gen_id }} {
+      font-size: {{ block.settings.note_size | times: 0.95 }}px;
+    }
+
+    .ai-color-chart-image-wrapper-{{ ai_gen_id }} {
+      max-width: 100%;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-color-chart-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-color-chart-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-color-chart-heading-{{ ai_gen_id }}">
+        {{ block.settings.heading }}
+      </h2>
+    {% endif %}
+
+    {% if block.settings.description != blank %}
+      <div class="ai-color-chart-text-{{ ai_gen_id }}">
+        {{ block.settings.description }}
+      </div>
+    {% endif %}
+
+    {% if block.settings.note != blank %}
+      <div class="ai-color-chart-note-{{ ai_gen_id }}">
+        {{ block.settings.note }}
+      </div>
+    {% endif %}
+
+    <div class="ai-color-chart-image-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.color_chart_image %}
+        <img
+          src="{{ block.settings.color_chart_image | image_url: width: 1600 }}"
+          alt="{{ block.settings.color_chart_image.alt | default: '42 standard color options for metal aluminum fan staves' | escape }}"
+          loading="lazy"
+          width="{{ block.settings.color_chart_image.width }}"
+          height="{{ block.settings.color_chart_image.height }}"
+          class="ai-color-chart-image-{{ ai_gen_id }}"
+        >
+      {% else %}
+        <div class="ai-color-chart-placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+          <div class="ai-color-chart-empty-state-{{ ai_gen_id }}">
+            Add your 42-color chart image
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if block.settings.show_button and block.settings.button_text != blank %}
+      <div class="ai-color-chart-button-wrapper-{{ ai_gen_id }}">
+        {% if block.settings.button_link != blank %}
+          <a href="{{ block.settings.button_link }}" class="ai-color-chart-button-{{ ai_gen_id }}">
+            {{ block.settings.button_text }}
+          </a>
+        {% else %}
+          <span class="ai-color-chart-button-{{ ai_gen_id }}" style="cursor: default;">
+            {{ block.settings.button_text }}
+          </span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Color chart",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "42 Standard Color Options"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Choose from 42 standard colors for your aluminum fan staves. Match your feather color, costume design, or stage performance theme. Custom color requests are also welcome.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "note",
+      "label": "Note",
+      "default": "<p>Colors may vary slightly due to screen settings, lighting, and the powder-coated finish.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_chart_image",
+      "label": "Color chart image"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "View Color Chart"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 600,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 1000
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "image_max_width",
+      "label": "Image width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "note_color",
+      "label": "Note",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "note_size",
+      "label": "Note size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading spacing",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "label": "Text spacing",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "note_spacing",
+      "label": "Note spacing",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Background",
+      "default": "#2e262b"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Hover background",
+      "default": "#1a1518"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_text_size",
+      "label": "Button text size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "button_spacing",
+      "label": "Button spacing",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "button_uppercase",
+      "label": "Button text style",
+      "options": [
+        {
+          "value": "none",
+          "label": "Normal"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "Image style"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Color chart"
+    }
+  ]
+}
+{% endschema %}

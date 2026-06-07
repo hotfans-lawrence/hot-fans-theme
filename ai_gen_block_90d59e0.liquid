@@ -1,0 +1,633 @@
+{% doc %}
+  @prompt
+    featured shops ,但Layout
+    Columns on desktop 数量为最大为5
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-featured-shops-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0;
+  }
+
+  .ai-featured-shops-container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-featured-shops-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.heading_alignment }};
+    margin-bottom: {{ block.settings.heading_spacing }}px;
+  }
+
+  .ai-featured-shops-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.subheading_spacing }}px;
+  }
+
+  .ai-featured-shops-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+  }
+
+  .ai-featured-shops-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+  }
+
+  .ai-featured-shop-card-{{ ai_gen_id }} {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ block.settings.card_border_radius }}px;
+    background-color: {{ block.settings.card_background }};
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ai-featured-shop-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-{{ block.settings.hover_lift }}px);
+    box-shadow: 0 {{ block.settings.hover_lift | times: 2 }}px {{ block.settings.hover_lift | times: 4 }}px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-featured-shop-link-{{ ai_gen_id }} {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ai-featured-shop-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background-color: #f4f4f4;
+  }
+
+  .ai-featured-shop-image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-featured-shop-image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+  }
+
+  .ai-featured-shop-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-featured-shop-content-{{ ai_gen_id }} {
+    padding: {{ block.settings.card_padding }}px;
+    text-align: {{ block.settings.card_text_alignment }};
+  }
+
+  .ai-featured-shop-name-{{ ai_gen_id }} {
+    font-size: {{ block.settings.shop_name_size }}px;
+    color: {{ block.settings.shop_name_color }};
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+
+  .ai-featured-shop-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.shop_description_size }}px;
+    color: {{ block.settings.shop_description_color }};
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-featured-shops-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_tablet }}, 1fr);
+    }
+
+    .ai-featured-shops-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.85);
+    }
+
+    .ai-featured-shop-name-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.shop_name_size }}px * 0.9);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-featured-shops-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+    }
+
+    .ai-featured-shops-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.75);
+    }
+
+    .ai-featured-shop-name-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.shop_name_size }}px * 0.85);
+    }
+
+    .ai-featured-shop-content-{{ ai_gen_id }} {
+      padding: {{ block.settings.card_padding | times: 0.75 }}px;
+    }
+  }
+{% endstyle %}
+
+<featured-shops-{{ ai_gen_id }} class="ai-featured-shops-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-featured-shops-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank or block.settings.subheading != blank %}
+      <div class="ai-featured-shops-header-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-featured-shops-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+        {% if block.settings.subheading != blank %}
+          <div class="ai-featured-shops-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-featured-shops-grid-{{ ai_gen_id }}">
+      {% for i in (1..5) %}
+        {% liquid
+          assign shop_name_key = 'shop_' | append: i | append: '_name'
+          assign shop_description_key = 'shop_' | append: i | append: '_description'
+          assign shop_image_key = 'shop_' | append: i | append: '_image'
+          assign shop_url_key = 'shop_' | append: i | append: '_url'
+
+          assign shop_name = block.settings[shop_name_key]
+          assign shop_description = block.settings[shop_description_key]
+          assign shop_image = block.settings[shop_image_key]
+          assign shop_url = block.settings[shop_url_key]
+        %}
+
+        {% if shop_name != blank %}
+          <div class="ai-featured-shop-card-{{ ai_gen_id }}">
+            {% if shop_url != blank %}
+              <a href="{{ shop_url }}" class="ai-featured-shop-link-{{ ai_gen_id }}">
+            {% endif %}
+
+            <div class="ai-featured-shop-image-wrapper-{{ ai_gen_id }}">
+              {% if shop_image %}
+                <img
+                  src="{{ shop_image | image_url: width: 600 }}"
+                  alt="{{ shop_name | escape }}"
+                  class="ai-featured-shop-image-{{ ai_gen_id }}"
+                  loading="lazy"
+                  width="600"
+                  height="600"
+                >
+              {% else %}
+                <div class="ai-featured-shop-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="ai-featured-shop-content-{{ ai_gen_id }}">
+              <h3 class="ai-featured-shop-name-{{ ai_gen_id }}">{{ shop_name }}</h3>
+              {% if shop_description != blank %}
+                <div class="ai-featured-shop-description-{{ ai_gen_id }}">{{ shop_description }}</div>
+              {% endif %}
+            </div>
+
+            {% if shop_url != blank %}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</featured-shops-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FeaturedShops{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.initializeAccessibility();
+      }
+
+      initializeAccessibility() {
+        const cards = this.querySelectorAll('.ai-featured-shop-card-{{ ai_gen_id }}');
+        cards.forEach((card) => {
+          const link = card.querySelector('.ai-featured-shop-link-{{ ai_gen_id }}');
+          if (link) {
+            link.setAttribute('tabindex', '0');
+          }
+        });
+      }
+    }
+
+    customElements.define('featured-shops-{{ ai_gen_id }}', FeaturedShops{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Featured shops",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured shops"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Spacing below heading",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "subheading_spacing",
+      "label": "Spacing below subheading",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columns on tablet",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "card_text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "hover_lift",
+      "label": "Hover lift",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#2e262b"
+    },
+    {
+      "type": "color",
+      "id": "shop_name_color",
+      "label": "Shop name color",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "color",
+      "id": "shop_description_color",
+      "label": "Description color",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size",
+      "label": "Shop name size",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "shop_description_size",
+      "label": "Description size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Shop 1"
+    },
+    {
+      "type": "text",
+      "id": "shop_1_name",
+      "label": "Shop name",
+      "default": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_1_description",
+      "label": "Description",
+      "default": "Brief description of the shop"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_1_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 2"
+    },
+    {
+      "type": "text",
+      "id": "shop_2_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_2_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_2_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 3"
+    },
+    {
+      "type": "text",
+      "id": "shop_3_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_3_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_3_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 4"
+    },
+    {
+      "type": "text",
+      "id": "shop_4_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_4_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_4_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 5"
+    },
+    {
+      "type": "text",
+      "id": "shop_5_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_5_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_5_url",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured shops"
+    }
+  ]
+}
+{% endschema %}

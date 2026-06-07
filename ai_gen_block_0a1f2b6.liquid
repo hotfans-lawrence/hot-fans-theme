@@ -1,0 +1,647 @@
+{% doc %}
+  @prompt
+    featured shops ,但Layout
+    Columns on desktop 数量为最大为9, Image 尺寸为3：4
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-featured-shops-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-featured-shops-container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-featured-shops-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.heading_alignment }};
+    margin-bottom: {{ block.settings.heading_spacing }}px;
+  }
+
+  .ai-featured-shops-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px 0;
+    font-weight: 600;
+  }
+
+  .ai-featured-shops-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+  }
+
+  .ai-featured-shops-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+  }
+
+  .ai-featured-shop-item-{{ ai_gen_id }} {
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-featured-shop-item-{{ ai_gen_id }}:hover {
+    transform: translateY(-5px);
+  }
+
+  .ai-featured-shop-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-bottom: 133.33%;
+    overflow: hidden;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    margin-bottom: 16px;
+    background-color: #f4f4f4;
+  }
+
+  .ai-featured-shop-image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-featured-shop-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-featured-shop-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-featured-shop-name-{{ ai_gen_id }} {
+    font-size: {{ block.settings.shop_name_size }}px;
+    color: {{ block.settings.shop_name_color }};
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .ai-featured-shop-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.shop_description_size }}px;
+    color: {{ block.settings.shop_description_color }};
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-featured-shops-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_tablet }}, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-featured-shops-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+    }
+
+    .ai-featured-shops-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.8);
+    }
+
+    .ai-featured-shops-subheading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.subheading_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<featured-shops-{{ ai_gen_id }} class="ai-featured-shops-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-featured-shops-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank or block.settings.subheading != blank %}
+      <div class="ai-featured-shops-header-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-featured-shops-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+        {% if block.settings.subheading != blank %}
+          <p class="ai-featured-shops-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-featured-shops-grid-{{ ai_gen_id }}">
+      {% for i in (1..9) %}
+        {% liquid
+          assign shop_name_key = 'shop_' | append: i | append: '_name'
+          assign shop_description_key = 'shop_' | append: i | append: '_description'
+          assign shop_image_key = 'shop_' | append: i | append: '_image'
+          assign shop_url_key = 'shop_' | append: i | append: '_url'
+
+          assign shop_name = block.settings[shop_name_key]
+          assign shop_description = block.settings[shop_description_key]
+          assign shop_image = block.settings[shop_image_key]
+          assign shop_url = block.settings[shop_url_key]
+        %}
+
+        {% if shop_name != blank %}
+          <a 
+            href="{{ shop_url | default: '#' }}" 
+            class="ai-featured-shop-item-{{ ai_gen_id }}"
+            {% if shop_url == blank %}aria-disabled="true"{% endif %}
+          >
+            <div class="ai-featured-shop-image-wrapper-{{ ai_gen_id }}">
+              {% if shop_image %}
+                <img
+                  src="{{ shop_image | image_url: width: 600 }}"
+                  alt="{{ shop_name | escape }}"
+                  loading="lazy"
+                  width="600"
+                  height="800"
+                  class="ai-featured-shop-image-{{ ai_gen_id }}"
+                >
+              {% else %}
+                <div class="ai-featured-shop-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <h3 class="ai-featured-shop-name-{{ ai_gen_id }}">{{ shop_name }}</h3>
+            {% if shop_description != blank %}
+              <p class="ai-featured-shop-description-{{ ai_gen_id }}">{{ shop_description }}</p>
+            {% endif %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</featured-shops-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FeaturedShops{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.initializeShops();
+      }
+
+      initializeShops() {
+        const items = this.querySelectorAll('.ai-featured-shop-item-{{ ai_gen_id }}');
+        items.forEach(item => {
+          if (item.getAttribute('aria-disabled') === 'true') {
+            item.style.cursor = 'default';
+            item.addEventListener('click', (e) => {
+              e.preventDefault();
+            });
+          }
+        });
+      }
+    }
+
+    customElements.define('featured-shops-{{ ai_gen_id }}', FeaturedShops{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Featured shops",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured shops"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover our curated collection of partner stores"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 9,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columns on tablet",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#16032e"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "color",
+      "id": "shop_name_color",
+      "label": "Shop name",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "color",
+      "id": "shop_description_color",
+      "label": "Shop description",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size",
+      "label": "Shop name size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "shop_description_size",
+      "label": "Description size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Shop 1"
+    },
+    {
+      "type": "text",
+      "id": "shop_1_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_1_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_1_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 2"
+    },
+    {
+      "type": "text",
+      "id": "shop_2_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_2_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_2_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 3"
+    },
+    {
+      "type": "text",
+      "id": "shop_3_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_3_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_3_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 4"
+    },
+    {
+      "type": "text",
+      "id": "shop_4_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_4_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_4_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 5"
+    },
+    {
+      "type": "text",
+      "id": "shop_5_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_5_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_5_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 6"
+    },
+    {
+      "type": "text",
+      "id": "shop_6_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_6_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_6_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_6_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 7"
+    },
+    {
+      "type": "text",
+      "id": "shop_7_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_7_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_7_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_7_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 8"
+    },
+    {
+      "type": "text",
+      "id": "shop_8_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_8_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_8_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_8_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Shop 9"
+    },
+    {
+      "type": "text",
+      "id": "shop_9_name",
+      "label": "Shop name"
+    },
+    {
+      "type": "textarea",
+      "id": "shop_9_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "shop_9_image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "shop_9_url",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured shops"
+    }
+  ]
+}
+{% endschema %}

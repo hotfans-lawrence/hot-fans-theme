@@ -1,0 +1,594 @@
+{% doc %}
+  @prompt
+    Please create a custom Shopify homepage section called “Featured Shops” or “Shop by Category Circles”.
+    
+    I want to recreate a section from my other Shopify store. The section should be a circular category navigation block for the homepage.
+    
+    Main requirements:
+    - Section heading at the top, centered.
+    - Show 5 to 6 category items.
+    - Each item should display as a circular image with a title below.
+    - Each item must be clickable and support a custom link.
+    - Each block must support:
+      - image picker
+      - title text
+      - custom URL link
+    - This section must support custom page links, not only collection links, because one item will link to a Custom Order page.
+    - Images must appear as perfect circles.
+    - Text should be centered below each circle.
+    - No long descriptions.
+    - No large cards.
+    - No borders.
+    - No default multicolumn card styling.
+    
+    Section settings needed:
+    - Section title
+    - Text color
+    - Circle size control
+    - Font size control
+    - Font style option, including all caps
+    - Background color or color scheme
+    - Top padding
+    - Bottom padding
+    
+    Layout behavior:
+    - Desktop: show items in one row when possible.
+    - Mobile: display neatly in 2 columns or allow horizontal scrolling.
+    - Images should be square and cropped cleanly into circles.
+    - The layout should remain clean and elegant on both desktop and mobile.
+    
+    Please create this as a reusable custom section, not hardcoded homepage markup.
+    
+    Suggested file names:
+    - sections/featured-shops.liquid
+    - assets/section-featured-shops.css
+    
+    Style direction:
+    - premium
+    - elegant
+    - minimal
+    - suitable for a luxury feather fan / performance accessories brand
+    - centered circular category images
+    - clean typography
+    - no bulky cards or heavy shadows
+    
+    This section will be used for:
+    - Boas
+    - Headdress
+    - Feathers
+    - Fan Staves & Supplies
+    - Custom Order
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-featured-shops-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+  }
+
+  .ai-featured-shops-container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-featured-shops-heading-{{ ai_gen_id }} {
+    text-align: center;
+    margin: 0 0 {{ block.settings.heading_bottom_spacing }}px;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    {% if block.settings.text_transform == 'uppercase' %}
+      text-transform: uppercase;
+    {% elsif block.settings.text_transform == 'capitalize' %}
+      text-transform: capitalize;
+    {% endif %}
+    letter-spacing: {{ block.settings.letter_spacing | divided_by: 100.0 }}em;
+  }
+
+  .ai-featured-shops-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax({{ block.settings.circle_size }}px, 1fr));
+    gap: {{ block.settings.grid_gap }}px;
+    justify-items: center;
+    align-items: start;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-featured-shops-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.items_per_row_desktop }}, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-featured-shops-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.items_per_row_mobile }}, 1fr);
+      gap: {{ block.settings.grid_gap_mobile }}px;
+    }
+
+    .ai-featured-shops-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.8);
+    }
+  }
+
+  .ai-featured-shop-item-{{ ai_gen_id }} {
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: {{ block.settings.title_spacing }}px;
+    width: 100%;
+    max-width: {{ block.settings.circle_size }}px;
+    transition: transform 0.2s ease;
+  }
+
+  .ai-featured-shop-item-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+  }
+
+  .ai-featured-shop-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: {{ block.settings.circle_size }}px;
+    height: {{ block.settings.circle_size }}px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    flex-shrink: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-featured-shop-image-wrapper-{{ ai_gen_id }} {
+      width: calc({{ block.settings.circle_size }}px * {{ block.settings.mobile_circle_scale | divided_by: 100.0 }});
+      height: calc({{ block.settings.circle_size }}px * {{ block.settings.mobile_circle_scale | divided_by: 100.0 }});
+    }
+  }
+
+  .ai-featured-shop-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-featured-shop-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+  }
+
+  .ai-featured-shop-placeholder-{{ ai_gen_id }} svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.3;
+  }
+
+  .ai-featured-shop-title-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.title_size }}px;
+    margin: 0;
+    {% if block.settings.text_transform == 'uppercase' %}
+      text-transform: uppercase;
+    {% elsif block.settings.text_transform == 'capitalize' %}
+      text-transform: capitalize;
+    {% endif %}
+    letter-spacing: {{ block.settings.letter_spacing | divided_by: 100.0 }}em;
+    line-height: 1.3;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-featured-shop-title-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.title_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<featured-shops-{{ ai_gen_id }} class="ai-featured-shops-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-featured-shops-container-{{ ai_gen_id }}">
+    {% if block.settings.section_heading != blank %}
+      <h2 class="ai-featured-shops-heading-{{ ai_gen_id }}">{{ block.settings.section_heading }}</h2>
+    {% endif %}
+
+    <div class="ai-featured-shops-grid-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign image_key = 'category_image_' | append: i
+          assign title_key = 'category_title_' | append: i
+          assign url_key = 'category_url_' | append: i
+          
+          assign category_image = block.settings[image_key]
+          assign category_title = block.settings[title_key]
+          assign category_url = block.settings[url_key]
+        %}
+
+        {% if category_title != blank %}
+          <a 
+            href="{% if category_url != blank %}{{ category_url }}{% else %}#{% endif %}" 
+            class="ai-featured-shop-item-{{ ai_gen_id }}"
+            aria-label="{{ category_title }}"
+          >
+            <div class="ai-featured-shop-image-wrapper-{{ ai_gen_id }}">
+              {% if category_image %}
+                <img
+                  src="{{ category_image | image_url: width: 400 }}"
+                  alt="{{ category_image.alt | default: category_title | escape }}"
+                  loading="lazy"
+                  width="400"
+                  height="400"
+                  class="ai-featured-shop-image-{{ ai_gen_id }}"
+                >
+              {% else %}
+                <div class="ai-featured-shop-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            <h3 class="ai-featured-shop-title-{{ ai_gen_id }}">{{ category_title }}</h3>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</featured-shops-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FeaturedShops{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.initAccessibility();
+      }
+
+      initAccessibility() {
+        const links = this.querySelectorAll('.ai-featured-shop-item-{{ ai_gen_id }}');
+        links.forEach(link => {
+          link.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              link.click();
+            }
+          });
+        });
+      }
+    }
+
+    customElements.define('featured-shops-{{ ai_gen_id }}', FeaturedShops{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Featured shops",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "heading_bottom_spacing",
+      "label": "Heading bottom spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Category 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_image_1",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "category_title_1",
+      "label": "Title",
+      "default": "Boas"
+    },
+    {
+      "type": "url",
+      "id": "category_url_1",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Category 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_image_2",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "category_title_2",
+      "label": "Title",
+      "default": "Headdress"
+    },
+    {
+      "type": "url",
+      "id": "category_url_2",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Category 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_image_3",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "category_title_3",
+      "label": "Title",
+      "default": "Feathers"
+    },
+    {
+      "type": "url",
+      "id": "category_url_3",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Category 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_image_4",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "category_title_4",
+      "label": "Title",
+      "default": "Fan Staves & Supplies"
+    },
+    {
+      "type": "url",
+      "id": "category_url_4",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Category 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_image_5",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "category_title_5",
+      "label": "Title",
+      "default": "Custom Order"
+    },
+    {
+      "type": "url",
+      "id": "category_url_5",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Category 6"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_image_6",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "category_title_6",
+      "label": "Title"
+    },
+    {
+      "type": "url",
+      "id": "category_url_6",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row_desktop",
+      "label": "Items per row (desktop)",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "items_per_row_mobile",
+      "label": "Items per row (mobile)",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Space between items (desktop)",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Space between items (mobile)",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "Circle style"
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "label": "Circle size (desktop)",
+      "min": 100,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 180
+    },
+    {
+      "type": "range",
+      "id": "mobile_circle_scale",
+      "label": "Mobile circle scale",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 85
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "label": "Space between circle and title",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text style",
+      "options": [
+        {
+          "value": "none",
+          "label": "Normal"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#16032e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#f7e7ce"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured shops"
+    }
+  ]
+}
+{% endschema %}
